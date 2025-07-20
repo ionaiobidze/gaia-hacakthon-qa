@@ -3,3 +3,4 @@ openai
 pytest
 allure-pytest
 python-dotenv
+pathspec>=0.11.1

@@ -1,0 +1,205 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Sample Service API",
+    "description": "Demo project for Spring Boot Swagger",
+    "termsOfService": "TOC",
+    "contact": {
+      "name": "Hendi Santika",
+      "url": "https://s.id/hendisantika",
+      "email": "hendisantika@yahoo.co.id"
+    },
+    "license": {
+      "name": "License",
+      "url": "https://s.id/hendisantika"
+    },
+    "version": "0.0.1-SNAPSHOT"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Student",
+      "description": "This API provides the capability to search Student from a Student Repository"
+    }
+  ],
+  "paths": {
+    "/students/{studentId}": {
+      "get": {
+        "tags": [
+          "Student"
+        ],
+        "summary": "Search Student by studentId",
+        "description": "Search Student by studentId.",
+        "operationId": "searchStudentById",
+        "parameters": [
+          {
+            "name": "studentId",
+            "in": "path",
+            "description": "The Id of the Student to be viewed",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/students/greaterThanAge/{age}": {
+      "get": {
+        "tags": [
+          "Student"
+        ],
+        "summary": "Search for all Students whose age is greater than input age",
+        "operationId": "filterStudentsByAge",
+        "parameters": [
+          {
+            "name": "age",
+            "in": "path",
+            "description": "filtering age",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/students/fromCity/{cityName}": {
+      "get": {
+        "tags": [
+          "Student"
+        ],
+        "summary": "Search for all Students who are from input city",
+        "operationId": "filterStudentsByCity",
+        "parameters": [
+          {
+            "name": "cityName",
+            "in": "path",
+            "description": "filtering city name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/students/filterByAgeAndCity": {
+      "get": {
+        "tags": [
+          "Student"
+        ],
+        "summary": "Search for all students who are from given city and whose age are greater than input age",
+        "operationId": "filterStudentsByAgeAndCity",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "in": "header",
+            "description": "School Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "age",
+            "in": "query",
+            "description": "Age of Student",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "cityName",
+            "in": "query",
+            "description": "City of Student",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/students/all": {
+      "get": {
+        "tags": [
+          "Student"
+        ],
+        "summary": "Get All Student Data",
+        "description": "Get All Student Data.",
+        "operationId": "getAllStudents",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {}
+}

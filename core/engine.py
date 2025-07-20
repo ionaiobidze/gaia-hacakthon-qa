@@ -6,6 +6,9 @@ from openai import OpenAI
 from openai.types.chat import ChatCompletion
 from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
 import json
+import os
+from pathlib import Path
+from pathspec import PathSpec
 
 class ConversationContext:
     def __init__(self):
@@ -159,13 +162,52 @@ class AIClient:
         """Get a summary of the current prompt configuration"""
         return self.prompt_manager.get_config_summary()
 
-    def analyze_files(self, file_paths: List[str]) -> Dict[str, Any]:
-        """Analyze a list of files using the AI assistant with context-aware prompts"""
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
+
+    def _get_project_file_paths(self, root_path: str = ".") -> List[str]:
+        """Return a list of project files respecting .gitignore rules."""
+        gitignore_path = Path(root_path) / ".gitignore"
+        patterns = []
+        
+        if gitignore_path.exists():
+            patterns = gitignore_path.read_text().splitlines()
+        
+        # Always exclude .git directory
+        patterns.append(".git/")
+        patterns.append(".git/**")
+        
+        spec = PathSpec.from_lines("gitwildmatch", patterns)
+        
+        file_paths: List[str] = []
+        for path in Path(root_path).rglob("*"):
+            if path.is_file():
+                rel_path = path.relative_to(root_path).as_posix()
+                if not spec.match_file(rel_path):
+                    file_paths.append(rel_path)
+        
+        return file_paths
+
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
+
+    def analyze_files(self, file_paths: Optional[List[str]] = None) -> Dict[str, Any]:
+        """Analyze repository files with context-aware prompts.
+
+        If *file_paths* is ``None`` the method automatically discovers all
+        relevant source files under *root_path* while respecting ``.gitignore``.
+        This makes it convenient to perform *deep* analysis without the caller
+        having to build the list manually.
+        """
+
+        if file_paths is None:
+            file_paths = self._get_project_file_paths()
+
         if not self.client:
             raise ValueError("OpenAI client not initialized. Provide api_key to constructor.")
-        
-        # Generate a context-aware prompt for file analysis
-        analysis_prompt = self.prompt_manager.get_file_analysis_prompt(file_paths)
-        
-        return self.call(analysis_prompt)
 
+        # Generate a context-aware prompt for file analysis.
+        analysis_prompt = self.prompt_manager.get_file_analysis_prompt(file_paths)
+        return self.call(analysis_prompt)

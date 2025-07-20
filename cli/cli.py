@@ -13,6 +13,10 @@ def perform_analysis(deep: bool, targets: List[str], swagger_path: Optional[str]
     """Perform analysis based on targets"""
     logger.info(f"Running analysis on: {', '.join(targets)}")
     
+    # Perform deep analysis first if enabled
+    if deep:
+        perform_deep_analysis(targets)
+    
     if "back" in targets:
         write_tests(swagger_path, user_message)
     
@@ -57,6 +61,44 @@ def write_tests(swagger_path: Optional[str] = None, user_message: Optional[str] 
         error_msg = f"Test generation failed: {e}"
         logger.error(error_msg)
         return {"status": "error", "error": error_msg}
+
+
+def perform_deep_analysis(targets: List[str]) -> None:
+    """Perform deep analysis using the AI engine with automatic file discovery"""
+    try:
+        from core.engine import AIClient
+        import os
+        
+        logger.info("Starting deep analysis with automatic file discovery")
+        
+        # Initialize AI client
+        client = AIClient()
+        
+        # Update client configuration based on targets
+        ui_focused = "ui" in targets
+        backend_focused = "back" in targets
+        client.update_from_cli_args(deep_analyze=True, ui=ui_focused, back=backend_focused)
+        
+        # Get project files using the automatic file picker
+        files = client._get_project_file_paths()
+        logger.info(f"Discovered {len(files)} project files")
+        logger.info(f"Files to analyze: {', '.join(files[:10])}{'...' if len(files) > 10 else ''}")
+        
+        # If OPENAI_API_KEY is available, perform AI analysis
+        if os.getenv("OPENAI_API_KEY"):
+            from back.config import BackendConfig
+            config = BackendConfig.from_env()
+            client = AIClient(api_key=config.openai_api_key)
+            client.update_from_cli_args(deep_analyze=True, ui=ui_focused, back=backend_focused)
+            
+            result = client.analyze_files(files)
+            logger.info("Deep analysis completed")
+            logger.info(f"Analysis response: {result.get('response', 'No response')}")
+        else:
+            logger.info("OPENAI_API_KEY not set - skipping AI analysis, showing discovered files only")
+        
+    except Exception as e:
+        logger.error(f"Deep analysis failed: {e}")
 
 
 def perform_ui_analysis() -> None:
