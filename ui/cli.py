@@ -128,13 +128,15 @@ class HealingOrchestrator:
                 BarColumn(),
                 TimeElapsedColumn(),
                 console=console,
-                transient=True
+                transient=False  # Keep progress visible
             ) as progress:
                 
                 # Step 1: Server Setup
                 task1 = progress.add_task("🚀 Starting servers...", total=100)
+                console.print("\n")
                 console.print(create_step_panel(1, "Server Setup", "Initializing React V1 and V2 environments"))
                 
+                progress.update(task1, completed=20)
                 if not self._start_servers():
                     console.print("❌ [red]Failed to start servers[/red]")
                     return False
@@ -142,8 +144,10 @@ class HealingOrchestrator:
                 
                 # Step 2: Baseline Tests
                 task2 = progress.add_task("✅ Running baseline tests...", total=100)
+                console.print("\n")
                 console.print(create_step_panel(2, "Baseline Validation", "Confirming tests pass on original version"))
                 
+                progress.update(task2, completed=30)
                 if not self._run_baseline_tests():
                     console.print("❌ [red]Baseline tests failed[/red]")
                     return False
@@ -151,8 +155,10 @@ class HealingOrchestrator:
                 
                 # Step 3: Failure Detection
                 task3 = progress.add_task("❌ Detecting failures...", total=100)
+                console.print("\n")
                 console.print(create_step_panel(3, "Failure Detection", "Identifying broken selectors in new version"))
                 
+                progress.update(task3, completed=25)
                 if not self._detect_failures():
                     console.print("❌ [red]Failure detection unsuccessful[/red]")
                     return False
@@ -160,8 +166,11 @@ class HealingOrchestrator:
                 
                 # Step 4: DOM Analysis
                 task4 = progress.add_task("📄 Analyzing DOM structures...", total=100)
+                console.print("\n")
+
                 console.print(create_step_panel(4, "DOM Analysis", "Capturing and comparing DOM structures"))
                 
+                progress.update(task4, completed=40)
                 dom_data = self._fetch_dom_data()
                 if not dom_data:
                     console.print("❌ [red]DOM analysis failed[/red]")
@@ -170,8 +179,10 @@ class HealingOrchestrator:
                 
                 # Step 5: AI Healing
                 task5 = progress.add_task("🤖 AI-powered healing...", total=100)
+                console.print("\n")
                 console.print(create_step_panel(5, "AI-Powered Mapping", "Using GPT-4 to map old selectors to new ones"))
                 
+                progress.update(task5, completed=30)
                 healing_success = self._perform_healing(dom_data)
                 if not healing_success:
                     console.print("❌ [red]AI healing failed[/red]")
@@ -180,8 +191,10 @@ class HealingOrchestrator:
                 
                 # Step 6: Validation
                 task6 = progress.add_task("✅ Validating fixes...", total=100)
+                console.print("\n")
                 console.print(create_step_panel(6, "Validation & Testing", "Confirming healed selectors work correctly"))
                 
+                progress.update(task6, completed=50)
                 final_success = self._validate_healing()
                 progress.update(task6, completed=100)
                 

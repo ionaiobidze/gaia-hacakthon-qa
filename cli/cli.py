@@ -93,7 +93,7 @@ def perform_analysis(deep: bool, targets: List[str], swagger_path: Optional[str]
             BarColumn(),
             TimeElapsedColumn(),
             console=console,
-            transient=True
+            transient=False  # Keep progress visible
         ) as progress:
             
             analyzed_files_context = None
@@ -103,22 +103,28 @@ def perform_analysis(deep: bool, targets: List[str], swagger_path: Optional[str]
                 task1 = progress.add_task("🔍 Deep analysis...", total=100)
                 console.print(create_backend_step_panel(1, "Deep Analysis", "Analyzing project structure and dependencies"))
                 
+                # Update progress incrementally during deep analysis
+                progress.update(task1, completed=10)
                 analyzed_files_context = perform_deep_analysis(targets)
-                results['deep_analysis_details'] = f"Analyzed {len(analyzed_files_context.split(',')) if analyzed_files_context else 0} files"
                 progress.update(task1, completed=100)
+                results['deep_analysis_details'] = f"Analyzed {len(analyzed_files_context.split(',')) if analyzed_files_context else 0} files"
             
             if "back" in targets:
                 task2 = progress.add_task("⚙️  Generating tests...", total=100)
                 console.print(create_backend_step_panel(2, "Test Generation", "Creating pytest tests from Swagger specification"))
+                
+                # Update progress incrementally
+                progress.update(task2, completed=20)
                 
                 # Combine user message with analyzed files context
                 final_message = user_message
                 if analyzed_files_context:
                     final_message = f"{user_message or ''}\n\nDiscovered files:\n{analyzed_files_context}".strip()
                 
+                progress.update(task2, completed=50)
                 test_results = write_tests(swagger_path, final_message)
-                results.update(test_results)
                 progress.update(task2, completed=100)
+                results.update(test_results)
             
             if "ui" in targets:
                 task3 = progress.add_task("🎨 UI analysis...", total=100)
