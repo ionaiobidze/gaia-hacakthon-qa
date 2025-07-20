@@ -8,4 +8,5 @@ class CLIArgs:
     ui: bool
     back: bool
     verbose: bool
-    language: Optional[str] = None 
+    swagger_path: Optional[str] = None
+    message: Optional[str] = None 

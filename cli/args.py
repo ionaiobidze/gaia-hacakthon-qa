@@ -17,21 +17,12 @@ Examples:
         """
     )
 
-    # Analysis mode arguments
-    parser.add_argument("--deep-analyze", "--deep", action="store_true", 
-                       help="Enable deep analysis mode with comprehensive code analysis")
-    parser.add_argument("--ui", action="store_true", 
-                       help="Analyze UI/Frontend layer with focus on components and interactions")
-    parser.add_argument("--back", action="store_true", 
-                       help="Analyze backend/API layer with focus on business logic")
-    
-    # Language and prompt configuration
-    parser.add_argument("--lang", "--language", type=str, 
-                       help="Target programming language (python, javascript, typescript, java, kotlin)")
-    
-    # Output and logging
-    parser.add_argument("--verbose", "-v", action="store_true", 
-                       help="Enable verbose output with detailed logging")
+    parser.add_argument("--deep-analyze", "--deep", action="store_true", help="Enable deep analysis mode")
+    parser.add_argument("--ui", action="store_true", help="Analyze UI layer")
+    parser.add_argument("--back", action="store_true", help="Analyze backend layer")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
+    parser.add_argument("--swagger-path", "--swagger", type=str, help="Path to swagger/OpenAPI JSON file")
+    parser.add_argument("--message", "-m", type=str, help="Custom message/requirements for test generation")
 
     args = parser.parse_args(argv)
 
@@ -40,5 +31,6 @@ Examples:
         ui=args.ui,
         back=args.back,
         verbose=args.verbose,
-        language=getattr(args, 'lang', None)
+        swagger_path=args.swagger_path,
+        message=args.message,
     ) 

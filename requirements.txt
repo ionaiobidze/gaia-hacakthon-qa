@@ -2,3 +2,4 @@ requests
 openai
 pytest
 allure-pytest
+python-dotenv
