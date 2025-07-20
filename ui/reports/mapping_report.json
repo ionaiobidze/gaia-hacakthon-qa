@@ -1,0 +1,64 @@
+{
+  "summary": {
+    "total_selectors": 9,
+    "successful_mappings": 8,
+    "failed_mappings": 1,
+    "success_rate": 0.8888888888888888
+  },
+  "details": [
+    {
+      "original_selector": "[data-testid='clear-sorting-button']",
+      "new_selector": "[data-testid='clear-sort-action']",
+      "confidence": 1.0,
+      "reasoning": "The candidate with `data-testid='clear-sort-action'` is the best match as it uniquely identifies the 'Clear Sort' button, maintaining the pattern of using a `data-testid` attribute for stable element identification."
+    },
+    {
+      "original_selector": "[data-testid='favorites-link']",
+      "new_selector": "[data-testid='nav-favorites']",
+      "confidence": 1.0,
+      "reasoning": "The candidate element with the data-testid 'nav-favorites' is a direct match for the 'Favorites' button, providing a unique and stable identifier."
+    },
+    {
+      "original_selector": "[data-testid='fav-btn']",
+      "new_selector": "[data-testid='favorite-icon']",
+      "confidence": 1.0,
+      "reasoning": "The new element has a unique and meaningful `data-testid` attribute, which is the most stable and maintainable selector."
+    },
+    {
+      "original_selector": "[data-testid='movie-card']",
+      "new_selector": "[data-testid='film-entry'] .film-name",
+      "confidence": 0.95,
+      "reasoning": "The candidate with index 1 has a unique 'data-testid' attribute for the parent and a stable child class 'film-name', closely matching the old structure and content."
+    },
+    {
+      "original_selector": "[data-testid='movie-card'] .movie-title",
+      "new_selector": "[data-testid='film-entry'] .film-name",
+      "confidence": 0.95,
+      "reasoning": "The selector '[data-testid='film-entry'] .film-name' uniquely identifies the element within a structured context, ensuring stability and maintainability."
+    },
+    {
+      "original_selector": "movie-title",
+      "new_selector": "",
+      "confidence": 0.0,
+      "reasoning": "Original element not found."
+    },
+    {
+      "original_selector": "[data-testid='movie-card'] .movie-year",
+      "new_selector": "[data-testid='film-entry'] .film-release-year",
+      "confidence": 0.95,
+      "reasoning": "The candidate with index 5 matches the context of the old selector with a similar structure and text, and it is nested within a parent with a unique data-testid attribute, ensuring stability and maintainability."
+    },
+    {
+      "original_selector": "[data-testid='sort-by-name-button']",
+      "new_selector": "[data-testid='sort-name-action']",
+      "confidence": 1.0,
+      "reasoning": "The candidate with the data-testid 'sort-name-action' is a direct match for the intended functionality of sorting by name, making it the most stable and maintainable choice."
+    },
+    {
+      "original_selector": "[data-testid='sort-by-year-button']",
+      "new_selector": "[data-testid='sort-year-action']",
+      "confidence": 1.0,
+      "reasoning": "The candidate with the 'data-testid' attribute 'sort-year-action' is unique and directly corresponds to the old element's purpose and text, ensuring a stable and maintainable selector."
+    }
+  ]
+}

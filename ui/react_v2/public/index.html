@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie App v2</title>
+    <style>
+        body { font-family: sans-serif; }
+        .navigation-bar { padding: 10px; background: #333; }
+        .nav-link { margin-right: 10px; cursor: pointer; color: white; }
+        .content-area { max-width: 800px; margin: auto; padding: 20px; }
+        .action-bar { margin-bottom: 20px; }
+        .film-item { border: 1px solid #555; background: #222; color: white; border-radius: 5px; padding: 15px; margin-bottom: 10px; }
+        .film-name { font-size: 1.2em; font-weight: bold; }
+        .film-release-year { color: #aaa; }
+        .favorite-icon { float: right; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header class="navigation-bar">
+        <!-- SELECTORS CHANGED -->
+        <button class="nav-link" data-testid="nav-home">Home</button>
+        <button class="nav-link" data-testid="nav-favorites">Favorites</button>
+    </header>
+
+    <!-- SELECTORS CHANGED -->
+    <main id="home-view" class="content-area">
+        <h1 data-testid="main-title">All Movies (v2)</h1>
+        <div class="action-bar">
+            <button data-testid="sort-name-action">Sort by Name</button>
+            <button data-testid="sort-year-action">Sort by Release Year</button>
+            <button data-testid="clear-sort-action">Clear Sort</button>
+        </div>
+        <div data-testid="film-list-container"></div>
+    </main>
+    
+    <!-- SELECTORS CHANGED -->
+    <section id="favorites-view" class="content-area" style="display:none;">
+        <h1 data-testid="fav-title">My Favorites (v2)</h1>
+        <div data-testid="favorite-films-container"></div>
+    </section>
+
+    <script>
+        // NOTE: The JavaScript logic is identical to v1.
+        // Only the HTML structure and selectors have changed.
+        const initialMovies = [
+            { id: 1, title: 'The Shawshank Redemption', year: 1994, favorited: false },
+            { id: 2, title: 'The Godfather', year: 1972, favorited: false },
+            { id: 3, title: 'The Dark Knight', year: 2008, favorited: false },
+        ];
+        let movies = [...initialMovies];
+        let favorites = [];
+
+        // JS is updated to use the NEW v2 selectors to make this page functional on its own
+        const movieListEl = document.querySelector('[data-testid="film-list-container"]');
+        const favoritesListEl = document.querySelector('[data-testid="favorite-films-container"]');
+        
+        function renderMovies(list, element) {
+            element.innerHTML = list.map(movie => `
+                <div class="film-item" data-testid="film-entry">
+                    <div>
+                        <span class="film-name">${movie.title}</span>
+                        <span class="favorite-icon" data-testid="favorite-icon">${movie.favorited ? '★' : '☆'}</span>
+                    </div>
+                    <div class="film-release-year">(${movie.year})</div>
+                </div>
+            `).join('');
+            addFavoriteListeners();
+        }
+
+        function addFavoriteListeners() {
+            document.querySelectorAll('.favorite-icon').forEach((btn, index) => {
+                btn.onclick = () => {
+                    const movie = movies[index];
+                    movie.favorited = !movie.favorited;
+                    if (movie.favorited) {
+                        if (!favorites.find(f => f.id === movie.id)) favorites.push(movie);
+                    } else {
+                        favorites = favorites.filter(f => f.id !== movie.id);
+                    }
+                    rerenderAll();
+                };
+            });
+        }
+        
+        function rerenderAll() { renderMovies(movies, movieListEl); renderMovies(favorites, favoritesListEl); }
+
+        document.querySelector('[data-testid="sort-name-action"]').addEventListener('click', () => { movies.sort((a, b) => a.title.localeCompare(b.title)); renderMovies(movies, movieListEl); });
+        document.querySelector('[data-testid="sort-year-action"]').addEventListener('click', () => { movies.sort((a, b) => b.year - a.year); renderMovies(movies, movieListEl); });
+        document.querySelector('[data-testid="clear-sort-action"]').addEventListener('click', () => { movies = [...initialMovies.map(m => movies.find(current => current.id === m.id) || m)]; renderMovies(movies, movieListEl); });
+        document.querySelector('[data-testid="nav-home"]').addEventListener('click', () => { document.getElementById('home-view').style.display = 'block'; document.getElementById('favorites-view').style.display = 'none'; });
+        document.querySelector('[data-testid="nav-favorites"]').addEventListener('click', () => { document.getElementById('home-view').style.display = 'none'; document.getElementById('favorites-view').style.display = 'block'; });
+        
+        rerenderAll();
+    </script>
+</body>
+</html>
