@@ -1,0 +1,4 @@
+requests
+openai
+pytest
+allure-pytest
