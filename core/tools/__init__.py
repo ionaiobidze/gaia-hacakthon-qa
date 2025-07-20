@@ -42,42 +42,7 @@ class ReadFiles(Tool):
             }
         }
 
-@tool(
-    name="pick_files",
-    desc="Return paths necessary to generate tests for",
-    params={
-        "type": "object",
-        "properties": {"paths": {"type": "array", "items": {"type": "string"}}},
-        "required": ["paths"]
-    }
-)
-class PickFiles(Tool):
-    def __init__(self):
-        self.extensions = ('.java', '.py', '.js', '.ts', '.kt')
-        self.stats = {"picked": 0, "skipped": 0}
-    def execute(self, args: Dict) -> List[str]:
-        worthy = []
-        for p in args["paths"]:
-            if self._is_testable(p):
-                worthy.append(p)
-                self.stats["picked"] += 1
-            else: self.stats["skipped"] += 1
-        return worthy
-    def _is_testable(self, path: str): return path.endswith(self.extensions) and not self._is_test_file(path)
-    def _is_test_file(self, path: str): return 'test' in path.lower() or 'spec' in path.lower()
-    def schema(self):
-        return {
-            "type": "function",
-            "function": {
-                "name": "pick_files",
-                "description": "Return paths necessary to generate tests for",
-                "parameters": {
-                    "type": "object",
-                    "properties": {"paths": {"type": "array", "items": {"type": "string"}}},
-                    "required": ["paths"]
-                }
-            }
-        }
+
 
 @tool(
     name="summary",

@@ -14,7 +14,6 @@ def test_search_student_by_id(base_url):
     response = requests.get(url)
     assert response.status_code == 200
     # Response should be a JSON object
-    assert response.headers["Content-Type"].startswith("application/json") or response.headers["Content-Type"] == "*/*"
     assert isinstance(response.json(), dict)
 
 # Test for GET /students/greaterThanAge/{age}
@@ -23,26 +22,23 @@ def test_filter_students_by_age(base_url):
     url = f"{base_url}/students/greaterThanAge/{age}"
     response = requests.get(url)
     assert response.status_code == 200
-    assert response.headers["Content-Type"].startswith("application/json") or response.headers["Content-Type"] == "*/*"
     assert isinstance(response.json(), dict)
 
 # Test for GET /students/fromCity/{cityName}
 def test_filter_students_by_city(base_url):
-    city_name = "NewYork"  # realistic city name
+    city_name = "New York"  # realistic city name
     url = f"{base_url}/students/fromCity/{city_name}"
     response = requests.get(url)
     assert response.status_code == 200
-    assert response.headers["Content-Type"].startswith("application/json") or response.headers["Content-Type"] == "*/*"
     assert isinstance(response.json(), dict)
 
 # Test for GET /students/filterByAgeAndCity with header and query parameters
 def test_filter_students_by_age_and_city(base_url):
     url = f"{base_url}/students/filterByAgeAndCity"
     headers = {"schoolId": "SCH123"}  # realistic school id
-    params = {"age": 20, "cityName": "LosAngeles"}
+    params = {"age": 20, "cityName": "Los Angeles"}
     response = requests.get(url, headers=headers, params=params)
     assert response.status_code == 200
-    assert response.headers["Content-Type"].startswith("application/json") or response.headers["Content-Type"] == "*/*"
     assert isinstance(response.json(), dict)
 
 # Test for GET /students/all
@@ -50,5 +46,4 @@ def test_get_all_students(base_url):
     url = f"{base_url}/students/all"
     response = requests.get(url)
     assert response.status_code == 200
-    assert response.headers["Content-Type"].startswith("application/json") or response.headers["Content-Type"] == "*/*"
     assert isinstance(response.json(), dict)

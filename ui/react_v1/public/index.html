@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie App v1</title>
+    <style>
+        body { font-family: sans-serif; }
+        .nav { padding: 10px; background: #eee; }
+        .nav-btn { margin-right: 10px; cursor: pointer; }
+        .container { max-width: 800px; margin: auto; padding: 20px; }
+        .controls { margin-bottom: 20px; }
+        .movie-card { border: 1px solid #ccc; border-radius: 5px; padding: 15px; margin-bottom: 10px; }
+        .movie-title { font-size: 1.2em; font-weight: bold; }
+        .movie-year { color: #555; }
+        .fav-btn { float: right; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <button id="home-link" class="nav-btn" data-testid="home-link">Home</button>
+        <button id="favorites-link" class="nav-btn" data-testid="favorites-link">Favorites</button>
+    </div>
+
+    <div id="main-page" class="container">
+        <h1 id="page-title">All Movies (v1)</h1>
+        <div class="controls">
+            <button id="sort-name-btn" data-testid="sort-by-name-button">Sort by Name</button>
+            <button id="sort-year-btn" data-testid="sort-by-year-button">Sort by Release Year</button>
+            <button id="clear-sort-btn" data-testid="clear-sorting-button">Clear Sort</button>
+        </div>
+        <div id="movie-list" data-testid="movie-list-container"></div>
+    </div>
+    
+    <div id="favorites-page" class="container" style="display:none;">
+        <h1 id="fav-page-title">My Favorites (v1)</h1>
+        <div id="favorites-list"></div>
+    </div>
+
+    <script>
+        const initialMovies = [
+            { id: 1, title: 'The Shawshank Redemption', year: 1994, favorited: false },
+            { id: 2, title: 'The Godfather', year: 1972, favorited: false },
+            { id: 3, title: 'The Dark Knight', year: 2008, favorited: false },
+        ];
+        let movies = [...initialMovies];
+        let favorites = [];
+        const movieListEl = document.getElementById('movie-list');
+        const favoritesListEl = document.getElementById('favorites-list');
+        function renderMovies(list, element) {
+            element.innerHTML = list.map(movie => `
+                <div class="movie-card" data-testid="movie-card">
+                    <div>
+                        <span class="movie-title">${movie.title}</span>
+                        <span class="fav-btn" data-testid="fav-btn">${movie.favorited ? '★' : '☆'}</span>
+                    </div>
+                    <div class="movie-year">(${movie.year})</div>
+                </div>
+            `).join('');
+            addFavoriteListeners();
+        }
+        function addFavoriteListeners() {
+            document.querySelectorAll('.fav-btn').forEach((btn, index) => {
+                btn.onclick = () => {
+                    const movie = movies[index];
+                    movie.favorited = !movie.favorited;
+                    if (movie.favorited) {
+                        if (!favorites.find(f => f.id === movie.id)) favorites.push(movie);
+                    } else {
+                        favorites = favorites.filter(f => f.id !== movie.id);
+                    }
+                    rerenderAll();
+                };
+            });
+        }
+        function rerenderAll() { renderMovies(movies, movieListEl); renderMovies(favorites, favoritesListEl); }
+        document.querySelector('[data-testid="sort-by-name-button"]').addEventListener('click', () => { movies.sort((a, b) => a.title.localeCompare(b.title)); renderMovies(movies, movieListEl); });
+        document.querySelector('[data-testid="sort-by-year-button"]').addEventListener('click', () => { movies.sort((a, b) => b.year - a.year); renderMovies(movies, movieListEl); });
+        document.querySelector('[data-testid="clear-sorting-button"]').addEventListener('click', () => { movies = [...initialMovies.map(m => movies.find(current => current.id === m.id) || m)]; renderMovies(movies, movieListEl); });
+        document.querySelector('[data-testid="home-link"]').addEventListener('click', () => { document.getElementById('main-page').style.display = 'block'; document.getElementById('favorites-page').style.display = 'none'; });
+        document.querySelector('[data-testid="favorites-link"]').addEventListener('click', () => { document.getElementById('main-page').style.display = 'none'; document.getElementById('favorites-page').style.display = 'block'; });
+        rerenderAll();
+    </script>
+</body>
+</html>
