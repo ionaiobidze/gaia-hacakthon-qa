@@ -1,5 +1,6 @@
 from typing import Optional, List
 import json
+import dotenv
 
 from cli.args import parse_args
 from core.logging import setup_logging, get_logger
@@ -8,17 +9,25 @@ from core.prompts import PromptConfig, AnalysisMode
 
 logger = get_logger("static_analysis_assistant")
 
+dotenv.load_dotenv()
+
 
 def perform_analysis(deep: bool, targets: List[str], swagger_path: Optional[str] = None, user_message: Optional[str] = None) -> None:
     """Perform analysis based on targets"""
     logger.info(f"Running analysis on: {', '.join(targets)}")
     
+    analyzed_files_context = None
+    
     # Perform deep analysis first if enabled
     if deep:
-        perform_deep_analysis(targets)
+        analyzed_files_context = perform_deep_analysis(targets)
     
     if "back" in targets:
-        write_tests(swagger_path, user_message)
+        # Combine user message with analyzed files context
+        final_message = user_message
+        if analyzed_files_context:
+            final_message = f"{user_message or ''}\n\nDiscovered files:\n{analyzed_files_context}".strip()
+        write_tests(swagger_path, final_message)
     
     if "ui" in targets:
         perform_ui_analysis()
@@ -63,7 +72,7 @@ def write_tests(swagger_path: Optional[str] = None, user_message: Optional[str] 
         return {"status": "error", "error": error_msg}
 
 
-def perform_deep_analysis(targets: List[str]) -> None:
+def perform_deep_analysis(targets: List[str]) -> Optional[str]:
     """Perform deep analysis using the AI engine with automatic file discovery"""
     try:
         from core.engine import AIClient
@@ -94,11 +103,17 @@ def perform_deep_analysis(targets: List[str]) -> None:
             result = client.analyze_files(files)
             logger.info("Deep analysis completed")
             logger.info(f"Analysis response: {result.get('response', 'No response')}")
+            
+            # Return the analysis result for use in test generation
+            return result.get('response', '')
         else:
             logger.info("OPENAI_API_KEY not set - skipping AI analysis, showing discovered files only")
+            # Return basic file list when no AI analysis available
+            return f"Project files discovered: {', '.join(files[:20])}"
         
     except Exception as e:
         logger.error(f"Deep analysis failed: {e}")
+        return None
 
 
 def perform_ui_analysis() -> None:

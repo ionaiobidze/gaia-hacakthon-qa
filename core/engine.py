@@ -48,7 +48,7 @@ class ConversationContext:
         return self.metadata.get(key, default)
 
 class AIClient:
-    def __init__(self, model: str = "gpt-4", api_key: Optional[str] = None, prompt_config: Optional[PromptConfig] = None):
+    def __init__(self, model: str = "gpt-4.1-mini", api_key: Optional[str] = None, prompt_config: Optional[PromptConfig] = None):
         self.model = model
         self.registry = ToolRegistry()
         self.context = ConversationContext()
